@@ -1,6 +1,7 @@
 import json
 import os
 
+from enums.framework.enums_framework_config_properties import EnumsFrameworkConfigProperties
 from helpers.helper_system import HelperSystem
 
 
@@ -17,12 +18,17 @@ class HelperRunConfig:
         self._set_data_dir()
 
     def _set_data_dir(self):
-        tests_result_dir_path = os.path.join(
-            self._system_helper.get_project_dir(),
-            self.get_property_value(property_name=EnumsFrameworkConfigProperties.DIR_DATA)
-        )
-        self._config[EnumsFrameworkConfigProperties.DIR_DATA.value] = tests_result_dir_path
-        os.makedirs(tests_result_dir_path, exist_ok=True)
+        try:
+            tests_result_dir_path = os.path.join(
+                self._system_helper.get_project_dir(),
+                self.get_property_value(property_name=EnumsFrameworkConfigProperties.DIR_DATA)
+            )
+            self._config[EnumsFrameworkConfigProperties.DIR_DATA.value] = tests_result_dir_path
+            os.makedirs(tests_result_dir_path, exist_ok=True)
+        except OSError as ex:
+            raise RuntimeError(f"unable to create data directory: {ex}") from ex
+        except Exception as ex:
+            raise RuntimeError(f"unexpected error while setting data dir: {ex}") from ex
 
     def _get_config(self):
         file_name = "config.json"
