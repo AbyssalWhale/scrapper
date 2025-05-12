@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from playwright.sync_api import Playwright, Locator, Page
 from pytest_playwright.pytest_playwright import playwright, browser
 
+from enums.frameowrk.enum_framework_config_properties import EnumsFrameworkConfigProperties
 from helpers.helpers_container import HelpersContainer
 
 
@@ -11,6 +12,8 @@ from helpers.helpers_container import HelpersContainer
 def onetime_set_up(playwright: Playwright):
     helpers = HelpersContainer(playwright=playwright)
     proj_root = helpers.system.get_project_dir()
+    data_dir = helpers.config.get_property_value(EnumsFrameworkConfigProperties.DIR_DATA)
+
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
