@@ -1,6 +1,8 @@
 from playwright.sync_api import Playwright
 
+from helpers.helper_system import HelperSystem
+
 
 class HelpersContainer:
     def __init__(self, playwright: Playwright):
-        pass
+        self.system = HelperSystem()

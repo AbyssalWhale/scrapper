@@ -4,9 +4,13 @@ from bs4 import BeautifulSoup
 from playwright.sync_api import Playwright, Locator, Page
 from pytest_playwright.pytest_playwright import playwright, browser
 
+from helpers.helpers_container import HelpersContainer
+
 
 @pytest.fixture(scope="session")
 def onetime_set_up(playwright: Playwright):
+    helpers = HelpersContainer(playwright)
+    proj_dir = helpers.system.get_project_dir()
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
