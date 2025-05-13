@@ -11,18 +11,17 @@ def onetime_set_up(playwright: Playwright):
     helpers = HelpersContainer(playwright)
     proj_dir = helpers.system.get_project_dir()
     data_dir = helpers.config.get_property_value(EnumsFrameworkConfigProperties.DIR_DATA)
-    browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context()
-    page = context.new_page()
 
-    yield page
+    yield helpers
 
-    page.close()
-    context.close()
-    browser.close()
+    helpers.playwright.close()
 
-def test_simple(onetime_set_up):
-    page = onetime_set_up
+@pytest.fixture(scope="function")
+def set_up(onetime_set_up):
+    yield onetime_set_up.playwright
+
+def test_simple(set_up):
+    page = set_up.page
     page.goto("")
     clickWhileExists(page.locator("//span[text()='Load More']"))
 

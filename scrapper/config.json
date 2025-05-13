@@ -1,3 +1,4 @@
 {
+  "headless": false,
   "data-dir" : "data"
 }
