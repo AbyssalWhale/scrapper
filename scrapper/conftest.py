@@ -1,24 +1,27 @@
-import pandas as pd
 import pytest
-from bs4 import BeautifulSoup
 from playwright.sync_api import Playwright, Locator, Page
 from pytest_playwright.pytest_playwright import playwright, browser
+
+from enums.framework.enums_framework_config_properties import EnumsFrameworkConfigProperties
+from helpers.helpers_container import HelpersContainer
 
 
 @pytest.fixture(scope="session")
 def onetime_set_up(playwright: Playwright):
-    browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context()
-    page = context.new_page()
+    helpers = HelpersContainer(playwright)
+    proj_dir = helpers.system.get_project_dir()
+    data_dir = helpers.config.get_property_value(EnumsFrameworkConfigProperties.DIR_DATA)
 
-    yield page
+    yield helpers
 
-    page.close()
-    context.close()
-    browser.close()
+    helpers.playwright.close()
 
-def test_simple(onetime_set_up):
-    page = onetime_set_up
+@pytest.fixture(scope="function")
+def set_up(onetime_set_up):
+    yield onetime_set_up.playwright
+
+def test_simple(set_up):
+    page = set_up.page
     page.goto("")
     clickWhileExists(page.locator("//span[text()='Load More']"))
 
