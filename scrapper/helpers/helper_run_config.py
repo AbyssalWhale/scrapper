@@ -1,8 +1,14 @@
 import json
 import os
+from typing import List, Any
+from xml.dom import NotFoundErr
 
+from pandas.core.arrays.arrow import ListAccessor
+
+from enums.enum_scrapping_sources import EnumScrappingSources
 from enums.framework.enums_framework_config_properties import EnumsFrameworkConfigProperties
 from helpers.helper_system import HelperSystem
+from models.model_source import ModelSource
 
 
 class HelperRunConfig:
@@ -11,8 +17,15 @@ class HelperRunConfig:
         self._config = self._get_config()
         self._set_all_dirs()
 
-    def get_property_value(self, property_name: EnumsFrameworkConfigProperties):
+    def get_property_value(self, property_name: EnumsFrameworkConfigProperties) -> Any:
         return self._config[str(property_name.value)]
+
+    def get_source(self, source: EnumScrappingSources) -> ModelSource:
+        sources: List[ModelSource] = [ModelSource(**item) for item in self._config.get(EnumsFrameworkConfigProperties.SOURCES.value, [])]
+        for source_current in sources:
+            if source_current.name == source.value:
+                return source_current
+        raise NotFoundErr(f"unable to find source {source.value}")
 
     def _set_all_dirs(self):
         self._set_data_dir()
