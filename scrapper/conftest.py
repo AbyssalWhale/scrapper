@@ -1,16 +1,15 @@
 import pytest
-from playwright.sync_api import Playwright, Locator, Page
-from pytest_playwright.pytest_playwright import playwright, browser
+from playwright.sync_api import Playwright, Locator
+from pytest_playwright.pytest_playwright import playwright
 
-from enums.framework.enums_framework_config_properties import EnumsFrameworkConfigProperties
+from enums.enum_scrapping_sources import EnumScrappingSources
 from helpers.helpers_container import HelpersContainer
+from models.model_source import ModelSource
 
 
 @pytest.fixture(scope="session")
 def onetime_set_up(playwright: Playwright):
     helpers = HelpersContainer(playwright)
-    proj_dir = helpers.system.get_project_dir()
-    data_dir = helpers.config.get_property_value(EnumsFrameworkConfigProperties.DIR_DATA)
 
     yield helpers
 
@@ -18,11 +17,12 @@ def onetime_set_up(playwright: Playwright):
 
 @pytest.fixture(scope="function")
 def set_up(onetime_set_up):
-    yield onetime_set_up.playwright
+    yield onetime_set_up
 
 def test_simple(set_up):
-    page = set_up.page
-    page.goto("")
+    page = set_up.playwright.page
+    source: ModelSource = set_up.config.get_source(EnumScrappingSources.HEINZ)
+    page.goto(source.url)
     clickWhileExists(page.locator("//span[text()='Load More']"))
 
 def clickWhileExists(element: Locator):

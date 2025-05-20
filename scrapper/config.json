@@ -1,4 +1,10 @@
 {
   "headless": false,
-  "data-dir" : "data"
+  "data-dir" : "data",
+  "sources" : [
+    {
+      "name" : "heinz",
+      "url" : "https://www.heinz.com/products"
+    }
+  ]
 }
